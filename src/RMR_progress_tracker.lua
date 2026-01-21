@@ -28,20 +28,6 @@ local prevProgress = {
     ["ifg"] = {},
 }
 
-local function isArrayChanged(arr1, arr2)
-    if #arr1 ~= #arr2 then
-        return true
-    end
-    -- Check each element
-    for i = 1, #a1 do
-        if arr1[i] ~= arr2[i] then
-            return true
-        end
-    end
-    return false
-end
-
-
 local function writeProgress(progress)
     local output = "window.RMRPTJS.progress={\n"
 
@@ -73,19 +59,12 @@ local function writeProgress(progress)
 
     output = output .. "}\n"
 
-    local fh = io.open("progress.js","w")
+    local fh = io.open("RMR_progress_tracker_cur_progress.js","w")
     if fh then
         fh:write(output)
         fh:close()
     end
 end
-
--- modified from AutoTracker
-function getCurrentScreen(curTitle)
-    local addrMap = {[1] = 0x7E00D1, [2] = 0x7E00D0, [3] = 0x7E00D0}
-    return cpu[addrMap[curTitle]]
-end
-
 
 local function parseProgress(curTitle)
     progress = {
@@ -106,10 +85,15 @@ local function parseProgress(curTitle)
     end
 
     -- checks
-    for i=0, 3*cChecksPerTitle-1, 1 do
-        table.insert(progress["checks"], cpu[addrChecks + i])
-        if progress["checks"][i] ~= prevProgress["checks"][i] then
-            updated = true
+    -- check flag is only presented in memory for the current game, hence, reading
+    -- sessionSave["checks"] from boot.lua is required, which is caching checks for all games.
+    for game=1, 3 do
+        for i=0, cChecksPerTitle-1, 1 do
+            local offset = (game - 1) * cChecksPerTitle
+            table.insert(progress["checks"], sessionSave["checks"][offset + i])
+            if progress["checks"][i] ~= prevProgress["checks"][i] then
+                updated = true
+            end
         end
     end
 
@@ -123,6 +107,13 @@ local function parseProgress(curTitle)
     end
     prevProgress = progress
 end
+
+-- modified from AutoTracker
+function getCurrentScreen(curTitle)
+    local addrMap = {[1] = 0x7E00D1, [2] = 0x7E00D0, [3] = 0x7E00D0}
+    return cpu[addrMap[curTitle]]
+end
+
 
 -- curTitle & some main loop logic is modified from RMR AutoTracker.lua
 while true do

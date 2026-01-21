@@ -4,7 +4,7 @@ window.RMRPTJS = {
   },
   onInterval() {
     const script = document.createElement("script");
-    script.src = `progress.js?t=${Date.now()}`;
+    script.src = `RMR_progress_tracker_cur_progress.js?t=${Date.now()}`;
     script.onload = window.RMRPTJS.parseProgress;
     document.body.appendChild(script);
   },
@@ -57,7 +57,7 @@ window.RMRPTJS = {
 
   start() {
     const script = document.createElement("script");
-    script.src = "id_maps.js";
+    script.src = "RMR_progress_tracker_id_maps.js";
     script.onload = window.RMRPTJS.onMapLoaded;
     document.body.appendChild(script);
   },

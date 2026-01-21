@@ -82,7 +82,7 @@ const fs = require('fs').promises;
     outputContent += '};\n';
     await fs.mkdir(outputFolderPath, { recursive: true });
     await fs.writeFile(
-      path.resolve(outputFolderPath, 'id_maps.js'),
+      path.resolve(outputFolderPath, 'RMR_progress_tracker_id_maps.js'),
       outputContent,
       { }
     );

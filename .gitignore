@@ -1,4 +1,4 @@
 patches/boot.lua
 dist
-progress.js
+RMR_progress_tracker_cur_progress.js
 .vscode
