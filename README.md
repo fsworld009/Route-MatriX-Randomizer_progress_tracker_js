@@ -5,7 +5,7 @@
 1. Include main JS file
 ```html
 <body>
-  <script src="RMR_progress_tracker.js"></script>
+  <script src="/path/to/RMR_progress_tracker.js"></script>
 </body>
 ```
 
@@ -14,7 +14,7 @@
   // All options are optional. The values in the example will be used if not provided.
   window.RMRPTJS.configure({
     // base URL to RMR_progress_tracker.js path
-    baseUrl: '',
+    baseUrl: './RMR_progress_tracker/',
     /**
      * callbacks when receiving progress report, function params are
      * (progress: {[id: string]: number}, newItems: string[])
