@@ -24,10 +24,10 @@ const fs = require('fs').promises;
     process.exit(1);
   }
 
-  const globalVarName = 'window.RMRPTJS';
+  const globalVarName = 'window.RMRPTJS.maps';
   const filenames = ['idItem.json', 'idCheck.json'];
   const mapNames = ['itemName', 'checkName']
-  let outputContent = `${globalVarName} = {};\n`;
+  let outputContent = `${globalVarName} = {\n`;
   for (let i=0; i < filenames.length; i+=1) {
     const filename = filenames[i];
     let content;
@@ -67,9 +67,9 @@ const fs = require('fs').promises;
         idNames.push([572, '3ItKeyVavaStage']);
       }
       idNames = idNames.sort((a, b) => a[0] - b[0]);
-      outputContent += `${globalVarName}.${mapNames[i]} = {\n`;
-      outputContent += idNames.map((c) => `  "${c[0]}":"${c[1]}"`).join(',\n');
-      outputContent += '\n};\n';
+      outputContent += `  ${mapNames[i]}: {\n`;
+      outputContent += idNames.map((c) => `    "${c[0]}":"${c[1]}"`).join(',\n');
+      outputContent += '\n  },\n';
     } catch (e) {
       console.log(`Failed to parse the content of ${filename} and create content for id_map.js`);
       console.error(e);
@@ -79,6 +79,7 @@ const fs = require('fs').promises;
 
 
   try {
+    outputContent += '};\n';
     await fs.mkdir(outputFolderPath, { recursive: true });
     await fs.writeFile(
       path.resolve(outputFolderPath, 'id_maps.js'),
