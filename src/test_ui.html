@@ -13,10 +13,10 @@
 <script src="RMR_progress_tracker.js"></script>
 
 <script>
-  function onProgressUpdate(progress, newItems) {
+  function onProgressUpdate(progress, acquiredItems, newItems) {
     const newItemsHtml = document.getElementById('newItems');
     newItemsHtml.innerHTML = '';
-    newItems.forEach((item) => {
+    acquiredItems.concat(newItems).forEach((item) => {
       const ul = document.createElement('ul');
       ul.innerHTML = item;
       newItemsHtml.appendChild(ul);

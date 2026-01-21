@@ -17,7 +17,10 @@
     baseUrl: './RMR_progress_tracker/',
     /**
      * callbacks when receiving progress report, function params are
-     * (progress: {[id: string]: number}, newItems: string[])
+     * (progress: {[id: string]: number}, acquiredItems: string[], newItems: string[])
+     * 
+     * progress: current progress
+     * acquiredItems: all required items during the current play session
      * newItems is a list of item IDs acquired between current report and previous report
      */
     callbacks: [],
@@ -45,3 +48,8 @@ your tsconfig to include the type path in source:
 }
 
 ```
+
+## TODO
+
+Do we want to keep `acquiredItems` and `newItems` during page refresh? We could utilize localStorage
+But how do we decide when to delete localStorage?

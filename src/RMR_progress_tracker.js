@@ -12,6 +12,7 @@ window.RMRPTJS = {
     document.body.appendChild(script);
   },
   prevProgress: null,
+  acquiredItems: [],
   parseProgress() {
     const parseConfigs = [
       { prop: 'items', mapName: 'itemId' },
@@ -52,8 +53,9 @@ window.RMRPTJS = {
 
     window.RMRPTJS.prevProgress = progress;
     window.RMRPTJS.options.callbacks.forEach((callback) => {
-      callback(progress, newItems);
+      callback(progress, window.RMRPTJS.acquiredItems, newItems);
     });
+    window.RMRPTJS.acquiredItems = window.RMRPTJS.acquiredItems.concat(newItems);
   },
   options: {
     baseUrl: './RMR_progress_tracker/',
