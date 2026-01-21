@@ -27,13 +27,16 @@
     Object.entries(progress).forEach(([name, value]) => {
       if (value === 1) {
         const ul = document.createElement('ul');
-        ul.innerHTML = name;
+        ul.innerHTML = `${name}=${value}`;
         progressHtml.appendChild(ul);
       }
     });
   }
 
-  window.RMRPTJS.onProgressUpdate(onProgressUpdate);
+  window.RMRPTJS.configure({
+    baseUrl: '',
+    callbacks: [onProgressUpdate]
+  });
   window.RMRPTJS.start();
 </script>
 </body>

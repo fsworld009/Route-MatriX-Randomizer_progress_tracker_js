@@ -1,11 +1,14 @@
 window.RMRPTJS = {
   onMapLoaded() {
-    setInterval(window.RMRPTJS.onInterval, 250);
+    setInterval(window.RMRPTJS.onInterval, window.RMRPTJS.options.interval);
   },
   onInterval() {
     const script = document.createElement("script");
-    script.src = `RMR_progress_tracker_cur_progress.js?t=${Date.now()}`;
-    script.onload = window.RMRPTJS.parseProgress;
+    script.src = `${window.RMRPTJS.options.baseUrl}RMR_progress_tracker_cur_progress.js?t=${Date.now()}`;
+    script.onload = function() {
+      window.RMRPTJS.parseProgress();
+      script.remove();
+    }
     document.body.appendChild(script);
   },
   prevProgress: null,
@@ -37,6 +40,10 @@ window.RMRPTJS = {
         }
       });
     });
+
+    progressList.push(['SIfg', window.RMRPTJS.progress['ifg']]);
+    progressList.push(['SCurrentGame', window.RMRPTJS.progress['currentGame']]);
+
     progressList = progressList.sort((a, b) => a[0] - b[0]);
     const progress = {};
     progressList.forEach(([id, value]) => {
@@ -44,20 +51,24 @@ window.RMRPTJS = {
     });
 
     window.RMRPTJS.prevProgress = progress;
-    window.RMRPTJS.callbacks.forEach((callback) => {
+    window.RMRPTJS.options.callbacks.forEach((callback) => {
       callback(progress, newItems);
     });
   },
-  callbacks: [],
+  options: {
+    baseUrl: './RMR_progress_tracker/',
+    interval: 250,
+    callbacks: [],
+  },
 
   // public interface
-  onProgressUpdate(callback) {
-    window.RMRPTJS.callbacks.push(callback);
+  configure(options) {
+    Object.assign(window.RMRPTJS.options, options);
   },
 
   start() {
     const script = document.createElement("script");
-    script.src = "RMR_progress_tracker_id_maps.js";
+    script.src = `${window.RMRPTJS.options.baseUrl}RMR_progress_tracker_id_maps.js`;
     script.onload = window.RMRPTJS.onMapLoaded;
     document.body.appendChild(script);
   },
