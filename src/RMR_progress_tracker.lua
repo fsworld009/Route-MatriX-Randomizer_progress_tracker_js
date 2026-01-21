@@ -104,7 +104,7 @@ local function parseProgress(curTitle)
         for i=0, cChecksPerTitle-1, 1 do
             local offset = (game - 1) * cChecksPerTitle
             table.insert(progress["checks"], sessionSave["checks"][offset + i])
-            if progress["checks"][i] ~= prevProgress["checks"][i] then
+            if progress["checks"][offset + i] ~= prevProgress["checks"][offset + i] then
                 updated = true
             end
         end
