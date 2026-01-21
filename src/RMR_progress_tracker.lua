@@ -42,7 +42,7 @@ local function writeProgress(curTitle)
             output = output .. ","
         end
     end
-    output = output .. "]\n"
+    output = output .. "],\n"
 
     -- ifg
     output = output .. '  "ifg": ' .. cpu[addrIFG] .. ',\n'
