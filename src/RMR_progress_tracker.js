@@ -1,53 +1,65 @@
 window.RMRPTJS = {
-  init() {
-    const script = document.createElement("script");
-    script.src = "id_maps.js";
-    script.onload = window.RMRPTJS.onMapLoaded;
-    document.body.appendChild(script);
-  },
   onMapLoaded() {
     setInterval(window.RMRPTJS.onInterval, 250);
   },
   onInterval() {
-    console.log('interval start');
-
     const script = document.createElement("script");
     script.src = `progress.js?t=${Date.now()}`;
     script.onload = window.RMRPTJS.parseProgress;
     document.body.appendChild(script);
-
-    console.log('interval end');
   },
   prevProgress: null,
   parseProgress() {
-    console.log('parse progress');
     const parseConfigs = [
       { prop: 'items', mapName: 'itemId' },
       { prop: 'checks', mapName: 'checkId' },
     ];
 
-    const progress = {}; // map of current progres, in format of {"CheckOrItemId": value}
+    let progressList = []; // list of current progress, in format of ["CheckOrItemId": value]
     const newItems = []; // a list of new item IDs obtained since last check
     parseConfigs.forEach(({prop, mapName}) => {
       window.RMRPTJS.progress[prop].forEach((progValue, varIndex) => {
         let value = progValue;
         for(let bit = 0; bit <= 7; bit += 1) {
           const bitIndex = varIndex * 8 + bit;
-          const name = window.RMRPTJS.maps[mapName][bitIndex];
-          if (name) {
+          const id = window.RMRPTJS.maps[mapName][bitIndex];
+          if (id) {
             const bitValue = value % 2;
-            progress[name] = bitValue;
-            if (prop === 'items' && bitValue === 1 && window.RMRPTJS.prevProgress && window.RMRPTJS.prevProgress[name] === 0) {
-              newItems.push(name);
+            progressList.push([id, bitValue]);
+            if (
+              prop === 'items' && bitValue === 1 && !id.match(/^It.+$/) &&
+              window.RMRPTJS.prevProgress && window.RMRPTJS.prevProgress[id] === 0
+            ) {
+              newItems.push(id);
             }
           }
           value = Math.floor(value / 2);
         }
       });
     });
+    progressList = progressList.sort((a, b) => a[0] - b[0]);
+    const progress = {};
+    progressList.forEach(([id, value]) => {
+      progress[id] = value;
+    });
 
-    console.log('parse progress done', newItems, progress['2ItShoryuken'], progress['2ChOPClear']);
     window.RMRPTJS.prevProgress = progress;
+    window.RMRPTJS.callbacks.forEach((callback) => {
+      callback(progress, newItems);
+    });
+  },
+  callbacks: [],
+
+  // public interface
+  onProgressUpdate(callback) {
+    window.RMRPTJS.callbacks.push(callback);
+  },
+
+  start() {
+    const script = document.createElement("script");
+    script.src = "id_maps.js";
+    script.onload = window.RMRPTJS.onMapLoaded;
+    document.body.appendChild(script);
   },
 };
 

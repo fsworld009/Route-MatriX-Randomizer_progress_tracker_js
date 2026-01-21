@@ -59,20 +59,31 @@ local function writeProgress(curTitle)
     end
 end
 
+-- modified from AutoTracker
+function getCurrentScreen(curTitle)
+    local addrMap = {[1] = 0x7E00D1, [2] = 0x7E00D0, [3] = 0x7E00D0}
+    return cpu[addrMap[curTitle]]
+end
 
--- curTitle & main loop logic is from RMR AutoTracker.lua
+
+-- curTitle & some main loop logic is modified from RMR AutoTracker.lua
 while true do
     ew.frameadvance()
 
     local curTitle = getTitle()
+    local screen = getCurrentScreen(curTitle)
     if prevTitle ~= curTitle then
         prevTitle = curTitle
         waitFrames = cWaitFrames
     end
     waitFrames = waitFrames - 1
 
-    if waitFrames <= 0 then
-        if (-waitFrames) % 10 == 0 then
+    if waitFrames <= 0 and -waitFrames % 10 == 0 then
+        -- wait another 180 sec wait when still in title screen
+        if screen == 0 then
+            waitFrames = 180
+        -- don't process until entering boss select
+        elseif screen == 2 then
             writeProgress(curTitle)
         end
     end

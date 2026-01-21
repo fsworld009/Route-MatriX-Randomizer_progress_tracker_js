@@ -1,12 +1,40 @@
 <html>
 <body>
-<div></div>
+<h2>New Items</h2>
+<div id="newItems">
+
+</div>
+
+<h2>Progress</h2>
+<div id="progress">
+
+</div>
 
 <script src="RMR_progress_tracker.js"></script>
 
 <script>
+  function onProgressUpdate(progress, newItems) {
+    const newItemsHtml = document.getElementById('newItems');
+    newItemsHtml.innerHTML = '';
+    newItems.forEach((item) => {
+      const ul = document.createElement('ul');
+      ul.innerHTML = item;
+      newItemsHtml.appendChild(ul);
+    });
 
-  window.RMRPTJS.init();
+    const progressHtml = document.getElementById('progress');
+    progressHtml.innerHTML = '';
+    Object.entries(progress).forEach(([name, value]) => {
+      if (value === 1) {
+        const ul = document.createElement('ul');
+        ul.innerHTML = name;
+        progressHtml.appendChild(ul);
+      }
+    });
+  }
+
+  window.RMRPTJS.onProgressUpdate(onProgressUpdate);
+  window.RMRPTJS.start();
 </script>
 </body>
 </html>
