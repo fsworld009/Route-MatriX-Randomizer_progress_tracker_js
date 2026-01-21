@@ -26,7 +26,7 @@ const fs = require('fs').promises;
 
   const globalVarName = 'window.RMRPTJS.maps';
   const filenames = ['idItem.json', 'idCheck.json'];
-  const mapNames = ['itemName', 'checkName']
+  const mapNames = ['itemId', 'checkId']
   let outputContent = `${globalVarName} = {\n`;
   for (let i=0; i < filenames.length; i+=1) {
     const filename = filenames[i];

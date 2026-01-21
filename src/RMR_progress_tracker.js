@@ -22,12 +22,12 @@ window.RMRPTJS = {
   parseProgress() {
     console.log('parse progress');
     const parseConfigs = [
-      { prop: 'items', mapName: 'itemName' },
-      { prop: 'checks', mapName: 'checkName' },
+      { prop: 'items', mapName: 'itemId' },
+      { prop: 'checks', mapName: 'checkId' },
     ];
 
-    const progress = {}; // map of current progres, in format of {"ChOrItemId": value}
-    const newItems = []; // a list of new items obtained since last check
+    const progress = {}; // map of current progres, in format of {"CheckOrItemId": value}
+    const newItems = []; // a list of new item IDs obtained since last check
     parseConfigs.forEach(({prop, mapName}) => {
       window.RMRPTJS.progress[prop].forEach((progValue, varIndex) => {
         let value = progValue;
@@ -46,7 +46,7 @@ window.RMRPTJS = {
       });
     });
 
-    console.log('parse progress done', newItems);
+    console.log('parse progress done', newItems, progress['2ItShoryuken'], progress['2ChOPClear']);
     window.RMRPTJS.prevProgress = progress;
   },
 };
