@@ -21,14 +21,35 @@ local cChecksPerTitle = 0x20
 local cItems = 0x60
 -- Copied from RMR boot.lua end
 
-local function writeProgress(curTitle)
+local prevProgress = {
+    ["items"] = {},
+    ["checks"] = {},
+    ["currentGame"] = {},
+    ["ifg"] = {},
+}
+
+local function isArrayChanged(arr1, arr2)
+    if #arr1 ~= #arr2 then
+        return true
+    end
+    -- Check each element
+    for i = 1, #a1 do
+        if arr1[i] ~= arr2[i] then
+            return true
+        end
+    end
+    return false
+end
+
+
+local function writeProgress(progress)
     local output = "window.RMRPTJS.progress={\n"
 
     -- items
     output = output .. '  "items": ['
-    for i=0,cItems-1,1 do
-        output = output .. cpu[addrItems + i]
-        if (i ~= cItems-1) then
+    for i=1, #progress["items"] do
+        output = output .. progress["items"][i]
+        if (i ~= #progress["items"]) then
             output = output .. ","
         end
     end
@@ -36,19 +57,19 @@ local function writeProgress(curTitle)
 
     -- checks
     output = output .. '  "checks": ['
-    for i=0,3*cChecksPerTitle-1,1 do
-        output = output .. cpu[addrChecks + i]
-        if (i ~= 3*cChecksPerTitle-1) then
+    for i=1, #progress["checks"] do
+        output = output .. progress["checks"][i]
+        if (i ~= #progress["checks"]) then
             output = output .. ","
         end
     end
     output = output .. "],\n"
 
     -- ifg
-    output = output .. '  "ifg": ' .. cpu[addrIFG] .. ',\n'
+    output = output .. '  "ifg": ' .. progress["ifg"] .. ',\n'
 
     -- currentGame
-    output = output .. '  "currentGame": ' .. curTitle .. ',\n'
+    output = output .. '  "currentGame": ' .. progress["currentGame"] .. ',\n'
 
     output = output .. "}\n"
 
@@ -66,6 +87,43 @@ function getCurrentScreen(curTitle)
 end
 
 
+local function parseProgress(curTitle)
+    progress = {
+        ["items"] = {},
+        ["checks"] = {},
+        ["currentGame"] = {},
+        ["ifg"] = {},
+    }
+
+    local updated = False
+
+    -- items
+    for i=0, cItems-1, 1 do
+        table.insert(progress["items"], cpu[addrItems + i])
+        if progress["items"][i] ~= prevProgress["items"][i] then
+            updated = true
+        end
+    end
+
+    -- checks
+    for i=0, 3*cChecksPerTitle-1, 1 do
+        table.insert(progress["checks"], cpu[addrChecks + i])
+        if progress["checks"][i] ~= prevProgress["checks"][i] then
+            updated = true
+        end
+    end
+
+    progress["ifg"] = cpu[addrIFG]
+
+    progress["currentGame"] = curTitle
+    updated = updated or (progress["ifg"] ~= prevProgress["ifg"]) or (progress["currentGame"] ~= prevProgress["currentGame"])
+
+    if updated then
+        writeProgress(progress)
+    end
+    prevProgress = progress
+end
+
 -- curTitle & some main loop logic is modified from RMR AutoTracker.lua
 while true do
     ew.frameadvance()
@@ -78,13 +136,14 @@ while true do
     end
     waitFrames = waitFrames - 1
 
-    if waitFrames <= 0 and -waitFrames % 10 == 0 then
-        -- wait another 180 sec wait when still in title screen
+    if waitFrames <= 0 then
+        waitFrames = 10
+        -- wait another cWaitFrames sec when still in title screen
         if screen == 0 then
-            waitFrames = 180
-        -- don't process until entering boss select
+            waitFrames = cWaitFrames
+        -- don't process until entering stage select screen
         elseif screen == 2 then
-            writeProgress(curTitle)
+            parseProgress(curTitle)
         end
     end
 end
