@@ -4,7 +4,7 @@ window.RMRPTJS = {
   },
   onInterval() {
     const script = document.createElement("script");
-    script.src = `${window.RMRPTJS.options.baseUrl}RMR_progress_tracker_cur_progress.js?t=${Date.now()}`;
+    script.src = `${window.RMRPTJS.options.baseUrl}RMR_progress_tracker_report.js?t=${Date.now()}`;
     script.onload = function() {
       window.RMRPTJS.parseProgress();
       script.remove();
@@ -44,6 +44,9 @@ window.RMRPTJS = {
 
     progressList.push(['SIfg', window.RMRPTJS.progress['ifg']]);
     progressList.push(['SCurrentGame', window.RMRPTJS.progress['currentGame']]);
+    window.RMRPTJS.progress['clear'].forEach((value, index) => {
+      progressList.push([`${index+1}AllClear`, value]);
+    });
 
     progressList = progressList.sort((a, b) => a[0] - b[0]);
     const progress = {};

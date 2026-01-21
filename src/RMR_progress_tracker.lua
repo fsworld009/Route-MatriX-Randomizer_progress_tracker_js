@@ -19,6 +19,7 @@ local addrChecks = 0x7FFF60
 local addrIFG = 0x7FFFAE
 local cChecksPerTitle = 0x20
 local cItems = 0x60
+local addrClear = {0x7FFFCF,0x7FFFCF,0x7FFFCF,}
 -- Copied from RMR boot.lua end
 
 local prevProgress = {
@@ -26,6 +27,7 @@ local prevProgress = {
     ["checks"] = {},
     ["currentGame"] = {},
     ["ifg"] = {},
+    ["clear"] = {},
 }
 
 local function writeProgress(progress)
@@ -51,6 +53,16 @@ local function writeProgress(progress)
     end
     output = output .. "],\n"
 
+    -- clear
+    output = output .. '  "clear": ['
+    for i=1, #progress["clear"] do
+        output = output .. progress["clear"][i]
+        if (i ~= #progress["clear"]) then
+            output = output .. ","
+        end
+    end
+    output = output .. "],\n"
+
     -- ifg
     output = output .. '  "ifg": ' .. progress["ifg"] .. ',\n'
 
@@ -59,7 +71,7 @@ local function writeProgress(progress)
 
     output = output .. "}\n"
 
-    local fh = io.open("RMR_progress_tracker_cur_progress.js","w")
+    local fh = io.open("RMR_progress_tracker_report.js","w")
     if fh then
         fh:write(output)
         fh:close()
@@ -72,6 +84,7 @@ local function parseProgress(curTitle)
         ["checks"] = {},
         ["currentGame"] = {},
         ["ifg"] = {},
+        ["clear"] = {},
     }
 
     local updated = False
@@ -94,6 +107,12 @@ local function parseProgress(curTitle)
             if progress["checks"][i] ~= prevProgress["checks"][i] then
                 updated = true
             end
+        end
+
+        -- clear flag
+        table.insert(progress["clear"], cpu[addrClear[game]])
+        if progress["clear"][game] ~= prevProgress["clear"][game] then
+            updated = true
         end
     end
 
