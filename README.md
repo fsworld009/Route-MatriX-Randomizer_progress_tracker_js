@@ -21,7 +21,7 @@
      * 
      * progress: current progress
      * acquiredItems: all required items during the current play session
-     * newItems is a list of item IDs acquired between current report and previous report
+     * newAcquiredItems is a list of item IDs acquired between current report and previous report
      */
     callbacks: [],
     // progress report parsing interval (unit: ms)
@@ -51,5 +51,5 @@ your tsconfig to include the type path in source:
 
 ## TODO
 
-Do we want to keep `acquiredItems` and `newItems` during page refresh? We could utilize localStorage
-But how do we decide when to delete localStorage?
+Do we want to keep `acquiredItems` and `newAcquiredItems` during page refresh? We could utilize
+localStorage, but how do we decide when to delete localStorage?

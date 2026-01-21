@@ -1,7 +1,7 @@
 <html>
 <body>
 <h2>New Items</h2>
-<div id="newItems">
+<div id="acquiredItems">
 
 </div>
 
@@ -13,13 +13,13 @@
 <script src="RMR_progress_tracker.js"></script>
 
 <script>
-  function onProgressUpdate(progress, acquiredItems, newItems) {
-    const newItemsHtml = document.getElementById('newItems');
-    newItemsHtml.innerHTML = '';
-    acquiredItems.concat(newItems).forEach((item) => {
+  function onProgressUpdate(progress, acquiredItems, newAcquiredItems) {
+    const acquiredItemsHtml = document.getElementById('acquiredItems');
+    acquiredItemsHtml.innerHTML = '';
+    acquiredItems.concat(newAcquiredItems).forEach((item) => {
       const ul = document.createElement('ul');
       ul.innerHTML = item;
-      newItemsHtml.appendChild(ul);
+      acquiredItemsHtml.appendChild(ul);
     });
 
     const progressHtml = document.getElementById('progress');

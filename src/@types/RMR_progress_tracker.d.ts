@@ -6,9 +6,7 @@ declare global {
 
     export type AcquiredItems = string[];
 
-    export type NewItems = string[];
-
-    export type Callback = (progress: Progress, acquiredItems: AcquiredItems, newItems: NewItems) => void;
+    export type Callback = (progress: Progress, acquiredItems: AcquiredItems, newAcquiredItems: AcquiredItems) => void;
 
     export interface Options {
       baseUrl: string;
