@@ -47,7 +47,7 @@ window.RMRPTJS = {
     progressList.push(['SDeathCount', window.RMRPTJS.progress['death']]);
 
     window.RMRPTJS.progress['clear'].forEach((value, index) => {
-      progressList.push([`${index+1}AllClear`, value]);
+      progressList.push([`${index+1}AllClear`, value >= 0x80 ? 1 : 0]);
     });
 
     progressList = progressList.sort((a, b) => a[0] - b[0]);
