@@ -51,5 +51,7 @@ your tsconfig to include the type path in source:
 
 ## TODO
 
-Do we want to keep `acquiredItems` and `newAcquiredItems` during page refresh? We could utilize
+* Death count (`addrTiwns`)
+* Track which games are enabled (`addrMultiworldInfo`, AutoTracker `multiConfig` parsing )
+* Do we want to keep `acquiredItems` and `newAcquiredItems` during page refresh? We could utilize
 localStorage, but how do we decide when to delete localStorage?
