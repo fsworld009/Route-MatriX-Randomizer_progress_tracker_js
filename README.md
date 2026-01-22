@@ -14,7 +14,7 @@
   // All options are optional. The values in the example will be used if not provided.
   window.RMRPTJS.configure({
     // base URL to RMR_progress_tracker.js path
-    baseUrl: './RMR_progress_tracker/',
+    baseUrl: './progress_tracker_js/',
     /**
      * callbacks when receiving progress report, function params are
      * (progress: {[id: string]: number}, acquiredItems: string[], newItems: string[])

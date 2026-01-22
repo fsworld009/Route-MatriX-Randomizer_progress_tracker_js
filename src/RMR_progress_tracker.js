@@ -61,7 +61,7 @@ window.RMRPTJS = {
     window.RMRPTJS.acquiredItems = window.RMRPTJS.acquiredItems.concat(newItems);
   },
   options: {
-    baseUrl: './RMR_progress_tracker/',
+    baseUrl: './progress_tracker_js/',
     interval: 250,
     callbacks: [],
   },
