@@ -44,6 +44,8 @@ window.RMRPTJS = {
 
     progressList.push(['SIfg', window.RMRPTJS.progress['ifg']]);
     progressList.push(['SCurrentGame', window.RMRPTJS.progress['currentGame']]);
+    progressList.push(['SDeathCount', window.RMRPTJS.progress['death']]);
+
     window.RMRPTJS.progress['clear'].forEach((value, index) => {
       progressList.push([`${index+1}AllClear`, value]);
     });

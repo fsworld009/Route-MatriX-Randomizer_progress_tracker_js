@@ -20,14 +20,16 @@ local addrIFG = 0x7FFFAE
 local cChecksPerTitle = 0x20
 local cItems = 0x60
 local addrClear = {0x7FFFCF,0x7FFFCF,0x7FFFCF,}
+local addrTiwns = {0x7E1F80,0x7E1FB3,0x7E1FB4}
 -- Copied from RMR boot.lua end
 
 local prevProgress = {
     ["items"] = {},
     ["checks"] = {},
-    ["currentGame"] = {},
-    ["ifg"] = {},
+    ["currentGame"] = nil,
+    ["ifg"] = nil,
     ["clear"] = {},
+    ["death"] = nil,
 }
 
 local function writeProgress(progress)
@@ -69,6 +71,9 @@ local function writeProgress(progress)
     -- currentGame
     output = output .. '  "currentGame": ' .. progress["currentGame"] .. ',\n'
 
+    -- death count
+    output = output .. '  "death": ' .. progress["death"] .. ',\n'
+
     output = output .. "}\n"
 
     local fh = io.open("RMR_progress_tracker_report.js","w")
@@ -85,6 +90,7 @@ local function parseProgress(curTitle)
         ["currentGame"] = {},
         ["ifg"] = {},
         ["clear"] = {},
+        ["death"] = nil,
     }
 
     local updated = False
@@ -118,8 +124,10 @@ local function parseProgress(curTitle)
 
     progress["ifg"] = cpu[addrIFG]
 
+    progress["death"] = cpu[addrTiwns[curTitle]]
+
     progress["currentGame"] = curTitle
-    updated = updated or (progress["ifg"] ~= prevProgress["ifg"]) or (progress["currentGame"] ~= prevProgress["currentGame"])
+    updated = updated or (progress["ifg"] ~= prevProgress["ifg"]) or (progress["currentGame"] ~= prevProgress["currentGame"]) or (progress["death"] ~= prevProgress["death"])
 
     if updated then
         writeProgress(progress)
