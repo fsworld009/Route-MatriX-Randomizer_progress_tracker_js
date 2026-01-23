@@ -14,17 +14,12 @@ window.RMRPTJS = {
   prevProgress: null,
   acquiredItems: [],
   parseProgress() {
+    let hasChange = false;
     const parseConfigs = [
       { prop: 'items', mapName: 'itemId' },
       { prop: 'checks', mapName: 'checkId' },
     ];
 
-    // Reset progress record when receiving the first report generated from the current run
-    // This is useful when reloading scripts while having the UI open
-    if (window.RMRPTJS.progress.reportOnBoot && window.RMRPTJS.progress.prevProgress) {
-      window.RMRPTJS.progress.prevProgress = null;
-      window.RMRPTJS.progress.acquiredItems = [];
-    }
 
     let progressList = []; // list of current progress, in format of ["CheckOrItemId": value]
     const newItems = []; // a list of new item IDs obtained since last check
@@ -50,7 +45,7 @@ window.RMRPTJS = {
     });
 
     progressList.push(['SIfg', window.RMRPTJS.progress['ifg']]);
-    progressList.push(['SCurrentGame', window.RMRPTJS.progress['currentGame']]);
+    progressList.push(['SCurrentTitle', window.RMRPTJS.progress['currentTitle']]);
     progressList.push(['SDeathCount', window.RMRPTJS.progress['death']]);
 
     // available games parsing
@@ -61,23 +56,43 @@ window.RMRPTJS = {
     }
 
     window.RMRPTJS.progress['clear'].forEach((value, index) => {
-      progressList.push([`${index+1}AllClear`, value >= 0x80 ? 1 : 0]);
+      progressList.push([`${index+1}SFinalClear`, value >= 0x80 ? 1 : 0]);
     });
 
     progressList = progressList.sort((a, b) => a[0] - b[0]);
     const progress = {};
+
+    let changeCounter = 0;
     progressList.forEach(([id, value]) => {
       progress[id] = value;
+      if (window.RMRPTJS.prevProgress && window.RMRPTJS.prevProgress[id] !== value ) {
+        hasChange = true;
+        changeCounter += 1;
+      }
     });
 
+    // If too many flag changes at once, it is likely that we are loading the game for the first
+    // time. Reset acquired items in this case.
+    if (changeCounter > window.RMRPTJS.options.rebootDetectionNewItemsThreshold) {
+      window.RMRPTJS.acquiredItems = [];
+      newItems.splice(0, newItems.length);
+    }
+
+    if (!window.RMRPTJS.prevProgress || hasChange) {
+      window.RMRPTJS.options.callbacks.forEach((callback) => {
+        callback(progress, window.RMRPTJS.acquiredItems, newItems);
+      });
+    }
+
+    // Record current progress before next check
     window.RMRPTJS.prevProgress = progress;
-    window.RMRPTJS.options.callbacks.forEach((callback) => {
-      callback(progress, window.RMRPTJS.acquiredItems, newItems);
-    });
     window.RMRPTJS.acquiredItems = window.RMRPTJS.acquiredItems.concat(newItems);
+    // Game is considered started once we start to receive continuous reports
+    window.RMRPTJS.gameStarted = !window.RMRPTJS.progress.reportOnBoot;
   },
   options: {
     baseUrl: './progress_tracker_js/',
+    rebootDetectionNewItemsThreshold: 10,
     interval: 250,
     callbacks: [],
   },

@@ -29,7 +29,7 @@ local reportOnBoot = true;
 local prevProgress = {
     ["items"] = {},
     ["checks"] = {},
-    ["currentGame"] = nil,
+    ["currentTitle"] = nil,
     ["ifg"] = nil,
     ["clear"] = {},
     ["death"] = nil,
@@ -72,8 +72,8 @@ local function writeProgress(progress)
     -- ifg
     output = output .. '  "ifg": ' .. progress["ifg"] .. ',\n'
 
-    -- currentGame
-    output = output .. '  "currentGame": ' .. progress["currentGame"] .. ',\n'
+    -- currentTitle
+    output = output .. '  "currentTitle": ' .. progress["currentTitle"] .. ',\n'
 
     -- death count
     output = output .. '  "death": ' .. progress["death"] .. ',\n'
@@ -82,7 +82,7 @@ local function writeProgress(progress)
     output = output .. '  "multiWorldInfo": ' .. progress["multiWorldInfo"] .. ',\n'
 
     -- reportOnBoot
-    output = output .. '  "reportOnBoot": ' .. tostring(reportOnBoot) .. ',\n'
+    -- output = output .. '  "reportOnBoot": ' .. tostring(reportOnBoot) .. ',\n'
 
     output = output .. "}\n"
 
@@ -97,7 +97,7 @@ local function parseProgress(curTitle)
     progress = {
         ["items"] = {},
         ["checks"] = {},
-        ["currentGame"] = {},
+        ["currentTitle"] = {},
         ["ifg"] = {},
         ["clear"] = {},
         ["death"] = nil,
@@ -127,15 +127,7 @@ local function parseProgress(curTitle)
         end
 
         -- clear flag
-        value = 0
-        if sessionSave ~= nil then
-            value = sessionSave.titleValue[game][addrClear[game]]
-        elseif curTitle == game then
-            --boot.lua is not used, assuming we are running single game without script
-            -- only fill values for the current game via cpu directly
-            value = cpu[addrClear[game]]
-        end
-        table.insert(progress["clear"], value or 0)
+        table.insert(progress["clear"], sessionSave.titleValue[game][addrClear[game]] or 0)
         if progress["clear"][game] ~= prevProgress["clear"][game] then
             updated = true
         end
@@ -145,12 +137,12 @@ local function parseProgress(curTitle)
 
     progress["death"] = cpu[addrTiwns[curTitle]]
 
-    progress["currentGame"] = curTitle
+    progress["currentTitle"] = curTitle
 
     progress["multiWorldInfo"] = cpu[addrMultiworldInfo[curTitle]]
     
     updated = updated or (progress["ifg"] ~= prevProgress["ifg"])
-        or (progress["currentGame"] ~= prevProgress["currentGame"])
+        or (progress["currentTitle"] ~= prevProgress["currentTitle"])
         or (progress["death"] ~= prevProgress["death"])
         or (progress["multiWorldInfo"] ~= prevProgress["multiWorldInfo"])
 
