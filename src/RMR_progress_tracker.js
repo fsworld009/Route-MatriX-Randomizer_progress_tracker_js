@@ -19,6 +19,13 @@ window.RMRPTJS = {
       { prop: 'checks', mapName: 'checkId' },
     ];
 
+    // Reset progress record when receiving the first report generated from the current run
+    // This is useful when reloading scripts while having the UI open
+    if (window.RMRPTJS.progress.reportOnBoot && window.RMRPTJS.progress.prevProgress) {
+      window.RMRPTJS.progress.prevProgress = null;
+      window.RMRPTJS.progress.acquiredItems = [];
+    }
+
     let progressList = []; // list of current progress, in format of ["CheckOrItemId": value]
     const newItems = []; // a list of new item IDs obtained since last check
     parseConfigs.forEach(({prop, mapName}) => {

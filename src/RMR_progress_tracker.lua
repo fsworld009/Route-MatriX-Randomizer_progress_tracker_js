@@ -24,6 +24,8 @@ local addrTiwns = {0x7E1F80,0x7E1FB3,0x7E1FB4}
 local addrMultiworldInfo = {0xBFFDD0,0xBFFDD0,0xCFFDD0}
 -- Copied from RMR boot.lua end
 
+local reportOnBoot = true;
+
 local prevProgress = {
     ["items"] = {},
     ["checks"] = {},
@@ -79,6 +81,8 @@ local function writeProgress(progress)
     -- multiworld info
     output = output .. '  "multiWorldInfo": ' .. progress["multiWorldInfo"] .. ',\n'
 
+    -- reportOnBoot
+    output = output .. '  "reportOnBoot": ' .. tostring(reportOnBoot) .. ',\n'
 
     output = output .. "}\n"
 
@@ -123,7 +127,15 @@ local function parseProgress(curTitle)
         end
 
         -- clear flag
-        table.insert(progress["clear"], sessionSave.titleValue[game][addrClear[game]] or 0)
+        value = 0
+        if sessionSave ~= nil then
+            value = sessionSave.titleValue[game][addrClear[game]]
+        elseif curTitle == game then
+            --boot.lua is not used, assuming we are running single game without script
+            -- only fill values for the current game via cpu directly
+            value = cpu[addrClear[game]]
+        end
+        table.insert(progress["clear"], value or 0)
         if progress["clear"][game] ~= prevProgress["clear"][game] then
             updated = true
         end
@@ -142,8 +154,9 @@ local function parseProgress(curTitle)
         or (progress["death"] ~= prevProgress["death"])
         or (progress["multiWorldInfo"] ~= prevProgress["multiWorldInfo"])
 
-    if updated then
+    if reportOnBoot or updated then
         writeProgress(progress)
+        reportOnBoot = false
     end
     prevProgress = progress
 end
