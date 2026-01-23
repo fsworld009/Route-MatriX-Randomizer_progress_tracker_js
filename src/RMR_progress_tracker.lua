@@ -116,7 +116,7 @@ local function parseProgress(curTitle)
         end
 
         -- clear flag
-        table.insert(progress["clear"], sessionSave.titleValue[game][addrClear[game]])
+        table.insert(progress["clear"], sessionSave.titleValue[game][addrClear[game]] or 0)
         if progress["clear"][game] ~= prevProgress["clear"][game] then
             updated = true
         end
