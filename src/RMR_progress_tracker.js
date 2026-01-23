@@ -46,6 +46,13 @@ window.RMRPTJS = {
     progressList.push(['SCurrentGame', window.RMRPTJS.progress['currentGame']]);
     progressList.push(['SDeathCount', window.RMRPTJS.progress['death']]);
 
+    // available games parsing
+    let availableGamesBits = window.RMRPTJS.progress['multiWorldInfo'] >>= 4;
+    for (let game = 1; game <= 3; game += 1) {
+      progressList.push([`${game}Enabled`, availableGamesBits % 2 === 1 ? 1 : 0]);
+      availableGamesBits = availableGamesBits >>= 1;
+    }
+
     window.RMRPTJS.progress['clear'].forEach((value, index) => {
       progressList.push([`${index+1}AllClear`, value >= 0x80 ? 1 : 0]);
     });

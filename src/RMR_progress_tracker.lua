@@ -21,6 +21,7 @@ local cChecksPerTitle = 0x20
 local cItems = 0x60
 local addrClear = {0x7FFFCF,0x7FFFCF,0x7FFFCF,}
 local addrTiwns = {0x7E1F80,0x7E1FB3,0x7E1FB4}
+local addrMultiworldInfo = {0xBFFDD0,0xBFFDD0,0xCFFDD0}
 -- Copied from RMR boot.lua end
 
 local prevProgress = {
@@ -30,6 +31,7 @@ local prevProgress = {
     ["ifg"] = nil,
     ["clear"] = {},
     ["death"] = nil,
+    ["multiWorldInfo"] = nil,
 }
 
 local function writeProgress(progress)
@@ -74,6 +76,10 @@ local function writeProgress(progress)
     -- death count
     output = output .. '  "death": ' .. progress["death"] .. ',\n'
 
+    -- multiworld info
+    output = output .. '  "multiWorldInfo": ' .. progress["multiWorldInfo"] .. ',\n'
+
+
     output = output .. "}\n"
 
     local fh = io.open("RMR_progress_tracker_report.js","w")
@@ -91,6 +97,7 @@ local function parseProgress(curTitle)
         ["ifg"] = {},
         ["clear"] = {},
         ["death"] = nil,
+        ["multiWorldInfo"] = nil,
     }
 
     local updated = False
@@ -127,7 +134,13 @@ local function parseProgress(curTitle)
     progress["death"] = cpu[addrTiwns[curTitle]]
 
     progress["currentGame"] = curTitle
-    updated = updated or (progress["ifg"] ~= prevProgress["ifg"]) or (progress["currentGame"] ~= prevProgress["currentGame"]) or (progress["death"] ~= prevProgress["death"])
+
+    progress["multiWorldInfo"] = cpu[addrMultiworldInfo[curTitle]]
+    
+    updated = updated or (progress["ifg"] ~= prevProgress["ifg"])
+        or (progress["currentGame"] ~= prevProgress["currentGame"])
+        or (progress["death"] ~= prevProgress["death"])
+        or (progress["multiWorldInfo"] ~= prevProgress["multiWorldInfo"])
 
     if updated then
         writeProgress(progress)
