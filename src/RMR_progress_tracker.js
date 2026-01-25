@@ -92,7 +92,7 @@ window.RMRPTJS = {
   },
   options: {
     baseUrl: './progress_tracker_js/',
-    rebootDetectionNewItemsThreshold: 10,
+    rebootDetectionNewItemsThreshold: 32,
     interval: 250,
     callbacks: [],
   },

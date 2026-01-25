@@ -40,7 +40,7 @@ When randomizing single game, please enable `Pseudo Multi Game` option.
      * it is likely that we are loading another game or a previous save. In this case, callbacks will
      * receive empty acquiredItems and newAcquiredItems on the callback
      */
-    rebootDetectionNewItemsThreshold: 10,
+    rebootDetectionNewItemsThreshold: 32,
   });
 ```
 
